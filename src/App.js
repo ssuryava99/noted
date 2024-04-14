@@ -2,6 +2,7 @@ import { useMemo, useState, useCallback } from 'react';
 import './App.css';
 import { useDropzone } from 'react-dropzone';
 import axios from 'axios';
+import { signInWithNotion } from './Notion'
 
 function App() {
 
@@ -110,6 +111,7 @@ function App() {
         width: "280px"
     }), [])
 
+
     return (
         <div className="App">
             <h2 className="noted-header">Noted.</h2>
@@ -122,21 +124,12 @@ function App() {
                     </div>
                 </div>
                 <div className='upload-btn'>
-                    {/* {
-        selectedFile.length > 0 ?
-        <button onClick={onUpload}>Upload to Jun Kit's Server</button> :
-        <button onClick={onUpload} disabled>Upload to Jun Kit's Server</button>
-      } */}
                     <button onClick={onUpload} disabled={selectedFile.length === 0}>
-                        <span class="material-symbols-outlined">send</span>
+                        <span className="material-symbols-outlined">send</span>
                     </button>
-                    {
-                        audioURL === "" ?
-                            <button onClick={testAPI} disabled>GET AUDIO</button> :
-                            <button onClick={testAPI}>GET AUDIO</button>
-                    }
-
+                    <button onClick={testAPI} disabled={audioURL===""}>GET AUDIO</button> :
                     <p>{uploadStatus}</p>
+                    <button onClick={signInWithNotion}>Login with Notion</button>
                 </div>
                 <aside>
                     <h4>Accepted files</h4>
