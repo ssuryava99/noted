@@ -7,6 +7,7 @@ function Index() {
     const rootURL = "https://102a-35-2-16-244.ngrok-free.app"
 
     const [selectedFile, setSelectedFile] = useState([]);
+    const [outStyle, setOutStyle] = useState("")
     const [uploadStatus, setUploadStatus] = useState("");
 
     const [audioURL, setAudioURL] = useState("")
@@ -27,15 +28,16 @@ function Index() {
         accept: {
             'video/mp4': ['.mp4'],
             'audio/mpeg': ['.mp3']
-        },
-        noClick: selectedFile.length > 0
+        }
     })
 
     const acceptedFileItems = acceptedFiles.map(file =>
         (
-            <li key={file.path}>
-                {file.path} - {file.size} bytes
-            </li>
+            <ul style={{listStyle: "none"}}>
+                <li key={file.path}>
+                    {file.path}
+                </li>
+            </ul>
         )
     );
 
@@ -61,11 +63,7 @@ function Index() {
             const response = await axios.post(`${rootURL}/api/v1/upload/`, formData);
 
             if (response.status >= 200 && response.status < 300) {
-                // console.log("RESPONSE 0: ", response.data);
-                // console.log("RESPONSE 1: ", response.data["audio"]);
-                // console.log("RESPONSE 2: ", response.data.audio);
                 setAudioURL(response.data.audio);
-                // console.log("RESPONSE AUDIO: ", audioURL);
                 setUploadStatus("Upload successful");
                 setSelectedFile([]) // reset the selectedFiles
             } else {
@@ -113,26 +111,53 @@ function Index() {
     return (
         <div className="App">
             <section className="container">
-                <div {...getRootProps({ className: 'dropzone', style})}>
-                    <input {...getInputProps()} />
-                    <span className="material-symbols-outlined">upload</span>
-                    <div className='upload-text'>
-                        <p>Upload here.</p>
+                <h2 className="noted-header">Noted.</h2>
+                <div className='upload-submit'>
+                    <div {...getRootProps({ className: 'dropzone', style})}>
+                        <input {...getInputProps()} />
+                        <span className="material-symbols-outlined">upload</span>
+                        <div className='upload-text'>
+                            <p>Upload here.</p>
+                        </div>
+
+                        {/* { acceptedFiles.length > 0 ? 
+                            acceptedFileItems
+                            :
+                            <>
+                                <span className="material-symbols-outlined">upload</span>
+                                <div className='upload-text'>
+                                    <p>Upload here.</p>
+                                </div>
+                            </>
+                        } */}
+                    </div>
+                    <div className='upload-btn'>
+                        <button 
+                        onClick={callUpload} 
+                        style={{
+                            background: "#292929",
+                            padding: "0",
+                            border: 'none'
+                        }}
+                        disabled={selectedFile.length === 0}>
+                            <span 
+                            className="material-symbols-outlined" 
+                            style={{
+                                color: "#F6BF33",
+                                scale: "2"
+                                }}
+                                >send</span>
+                        </button>
+                        {/* <button onClick={callPredict} disabled={audioURL===""}>Submit to Gemini</button> : */}
+                        {/* <p>{uploadStatus}</p> */}
                     </div>
                 </div>
-                <div className='upload-btn'>
-                    <button onClick={callUpload} disabled={selectedFile.length === 0}>
-                        <span className="material-symbols-outlined">send</span>
-                    </button>
-                    <button onClick={callPredict} disabled={audioURL===""}>Submit to Gemini</button> :
-                    <p>{uploadStatus}</p>
-                </div>
-                <aside>
+                {/* <aside>
                     <h4>Accepted files</h4>
-                    <ul>{acceptedFileItems}</ul>
+                    <ul>{acceptedFileItems}</ul> 
                     <h4>Rejected files</h4>
                     <ul>{fileRejectionItems}</ul>
-                </aside>
+                </aside> */}
             </section>
         </div>
     );
