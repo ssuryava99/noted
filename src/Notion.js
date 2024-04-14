@@ -12,6 +12,9 @@ export const supabase = createClient(supabaseUrl, supabaseKey);
 export async function signInWithNotion() {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'notion',
+      options: {
+        redirectTo: `${window.location.origin}/success`
+      }
     })
     if (!error) {
         console.log(data);

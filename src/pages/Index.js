@@ -2,7 +2,6 @@ import { useMemo, useState, useCallback } from 'react';
 import '../App.css';
 import { useDropzone } from 'react-dropzone';
 import axios from 'axios';
-import { signInWithNotion } from '../Notion'
 
 function Index() {
     const rootURL = "https://102a-35-2-16-244.ngrok-free.app"
@@ -53,7 +52,7 @@ function Index() {
     });
 
 
-    const onUpload = async () => {
+    const callUpload = async () => {
         setUploadStatus("Uploading....");
         const formData = new FormData();
         selectedFile.map(file => formData.append("file", file));
@@ -79,7 +78,7 @@ function Index() {
         }
     };
 
-    const testAPI = async () => {
+    const callPredict = async () => {
 
         console.log("AUDIO URL: ", audioURL);
 
@@ -110,12 +109,9 @@ function Index() {
         width: "280px"
     }), [])
 
-    
-
 
     return (
         <div className="App">
-            <h2 className="noted-header">Noted.</h2>
             <section className="container">
                 <div {...getRootProps({ className: 'dropzone', style})}>
                     <input {...getInputProps()} />
@@ -125,12 +121,11 @@ function Index() {
                     </div>
                 </div>
                 <div className='upload-btn'>
-                    <button onClick={onUpload} disabled={selectedFile.length === 0}>
+                    <button onClick={callUpload} disabled={selectedFile.length === 0}>
                         <span className="material-symbols-outlined">send</span>
                     </button>
-                    <button onClick={testAPI} disabled={audioURL===""}>GET AUDIO</button> :
+                    <button onClick={callPredict} disabled={audioURL===""}>Submit to Gemini</button> :
                     <p>{uploadStatus}</p>
-                    <button onClick={signInWithNotion}>Login with Notion</button>
                 </div>
                 <aside>
                     <h4>Accepted files</h4>
