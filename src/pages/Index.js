@@ -2,14 +2,18 @@ import { useMemo, useState, useCallback, useContext, useEffect } from 'react';
 import '../App.css';
 import { useDropzone } from 'react-dropzone';
 import axios from 'axios';
-import { AccessContext, AccessProvider } from '../components/AccessProvider';
+import { AccessContext } from '../components/AccessProvider';
 
 function Index() {
-    const rootURL = 'http://ec2-18-226-180-32.us-east-2.compute.amazonaws.com'
+    const rootURL = 'http://ec2-18-226-4-188.us-east-2.compute.amazonaws.com'
 
     const [selectedFile, setSelectedFile] = useState([]);
     const [uploadStatus, setUploadStatus] = useState("");
+
+    const [predictLoad, setPredictLoad] = useState(false);
     
+    const [resultLink, setResultLink] = useState("")
+
     const [audioURL, setAudioURL] = useState("")
     const [styleMode, setStyleMode] = useState("0") // 0 is concise, 1 is elaborate
 
@@ -42,8 +46,20 @@ function Index() {
 
     const acceptedFileItems = acceptedFiles.map(file =>
         (
-                <li key={file.path}>
-                    {file.path}
+                <li key={file.path} style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    gap: "0.5em"
+                }}>
+                    <span 
+                    className="material-symbols-outlined"
+                    style={{
+                        scale: "3"
+                    }}
+                    >folder</span>
+                    <p>{file.path}</p>
                 </li>
         )
     );
@@ -72,7 +88,7 @@ function Index() {
                 console.log(response.data);
                 setAudioURL(response.data.audio);
                 setUploadStatus("Upload successful");
-                setSelectedFile([]) // reset the selectedFiles
+                // setSelectedFile([]) // reset the selectedFiles
             } else {
                 console.error("Failed to upload: ", response.statusText);
                 setUploadStatus("Upload failed...");
@@ -88,9 +104,12 @@ function Index() {
         console.log("AUDIO URL: ", audioURL);
 
         try {
+            setPredictLoad(true);
             const response = await axios.get(`${rootURL}/api/v1/predict/${audioURL}/${databaseID}?provider_token=${providerToken}&style=${styleMode}`);
-
+            
             if (response.status >= 200 && response.status < 300) {
+                setPredictLoad(false);
+                setResultLink(response.data.url)
                 console.log("RESPONSE DOWNLOAD: ", response.data);
             } else {
                 console.error("Test api download: ", response.statusText);
@@ -123,8 +142,21 @@ function Index() {
     return (
         <div className="App">
             <section className="container">
-                <h2 className="noted-header">Noted.</h2>
-                <div className='upload-submit'>
+                <h2 className="noted-header">
+                    {resultLink !== "" ?
+                    <a 
+                    href={resultLink}
+                    style={{
+                        color: "white",
+
+                    }}
+                    >Noted.</a> :
+                    "Noted."
+                }
+                </h2>
+                {resultLink === "" ?
+                <>
+                    <div className='upload-submit'>
                     <div {...getRootProps({ className: 'dropzone', style})}>
                         <input {...getInputProps()} />
                         <span className="material-symbols-outlined">upload</span>
@@ -132,19 +164,18 @@ function Index() {
                             <p>Upload here.</p>
                         </div>
 
-                        {/* { acceptedFiles.length > 0 ? 
-                            acceptedFileItems
-                            :
-                            <>
-                                <span className="material-symbols-outlined">upload</span>
-                                <div className='upload-text'>
-                                    <p>Upload here.</p>
-                                </div>
-                            </>
-                        } */}
                     </div>
                     <div className='upload-btn'>
-                        <button 
+                        {predictLoad ?
+                        <div className='loading-logo'>
+                        <span 
+                        className="material-symbols-outlined" 
+                        style={{
+                            color: "#F6BF33",
+                            scale: "2"
+                            }}
+                            >hourglass_top</span></div>  :
+                        <button
                         onClick={callPredict} 
                         style={{
                             background: "#292929",
@@ -160,12 +191,12 @@ function Index() {
                                 }}
                                 >send</span>
                         </button>
-                        {/* <button onClick={callPredict} disabled={audioURL===""}>Submit to Gemini</button> : */}
+                        }
                     </div>
                 </div>
                 <div style={{
-                    display: "grid",
-                    gridRow: "1 1",
+                    display: "flex",
+                    flexDirection: "row",
                     gap: "0.5em",
                 }}>
                     <button disabled={styleMode === "0"} onClick={updateStyle} value="0">Concise</button> 
@@ -173,7 +204,22 @@ function Index() {
                 </div>
                 <p>{uploadStatus}</p>
                 <h4>Accepted files</h4>
-                <ul>{acceptedFileItems}</ul> 
+                <ul
+                style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    gap: "1em",
+                    listStyle: "none",
+                    margin: "1em",
+                    padding: "0"
+                }}
+                >{acceptedFileItems}</ul> 
+                </>
+                : ""
+                }
+                
                 {/* <aside>
                     <h4>Rejected files</h4>
                     <ul>{fileRejectionItems}</ul>

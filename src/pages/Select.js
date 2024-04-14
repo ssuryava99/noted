@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom'
 // import { Client } from '@notionhq/client'
 
 function Select() {
-    const rootURL = 'http://ec2-18-226-180-32.us-east-2.compute.amazonaws.com'
+    const rootURL = 'http://ec2-18-226-4-188.us-east-2.compute.amazonaws.com'
     const { databaseID, providerToken } = useContext(AccessContext)
     const [databases, setDatabases] = useState([])
 
