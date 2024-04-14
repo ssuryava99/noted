@@ -2,12 +2,15 @@ import { useContext, useEffect, useState } from "react";
 import '../App.css'
 import { AccessContext } from "../components/AccessProvider";
 import Card from "../components/Card";
+import { useNavigate } from 'react-router-dom'
 // import { Client } from '@notionhq/client'
 
 function Select() {
+    const rootURL = 'http://ec2-18-226-180-32.us-east-2.compute.amazonaws.com'
     const { databaseID, providerToken } = useContext(AccessContext)
-    const rootURL = 'http://ec2-3-149-239-235.us-east-2.compute.amazonaws.com'
     const [databases, setDatabases] = useState([])
+
+    const navigate = useNavigate();
 
     useEffect(() => {
         fetch(`${rootURL}/api/v1/search?provider_token=${providerToken}`, {method: "POST"})
@@ -17,17 +20,25 @@ function Select() {
         })
         .then((data) => {
             console.log(data)
-            setDatabases(data)
+            setDatabases(data.data)
         })
         .catch((error) => console.log(error));
-    })
+    }, [providerToken])
+
+    function idSet(e) {
+        e.preventDefault();
+        if (databaseID) {
+            navigate('/index')
+        }
+    }
 
 
     return (
         <div className="App">
             <div className="header-select">
                 <h3 style={{textAlign: "left", width: "460px"}}>Choose database.</h3>
-                <button 
+                <button
+                onClick={idSet} 
                 disabled={databaseID === null}
                 style={{
                     background: "#292929",
@@ -54,13 +65,13 @@ function Select() {
                     alignItems: "center"
                     
                     }}>
-                    {databases.map((database) => {
+                    {databases.map((database) => (
                         <Card
                         name={database.name}
                         id={database.id}
                         key={database.id}
                         />
-                    })}
+                    ))}
                 </div>
             </div>
         </div>

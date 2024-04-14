@@ -6,7 +6,7 @@ import './Card.css'
 function Card({name, id}) {
     const [hidden, setHidden] = useState(true);
 
-    const { setDatabaseID } = useContext(AccessContext)
+    const { updateDatabaseID } = useContext(AccessContext)
 
     const style1 = {
         border: "solid 1px #F6BF33",
@@ -20,7 +20,8 @@ function Card({name, id}) {
 
     function clickHandler(e) {
         e.preventDefault();
-        setDatabaseID(e.target.value)
+        updateDatabaseID(e.target.value)
+        console.log(e.target.value)
     }
 
     return (

@@ -1,22 +1,30 @@
-import { useMemo, useState, useCallback } from 'react';
+import { useMemo, useState, useCallback, useContext, useEffect } from 'react';
 import '../App.css';
 import { useDropzone } from 'react-dropzone';
 import axios from 'axios';
+import { AccessContext, AccessProvider } from '../components/AccessProvider';
 
 function Index() {
-    const rootURL = "https://102a-35-2-16-244.ngrok-free.app"
+    const rootURL = 'http://ec2-18-226-180-32.us-east-2.compute.amazonaws.com'
 
     const [selectedFile, setSelectedFile] = useState([]);
-    const [outStyle, setOutStyle] = useState("")
     const [uploadStatus, setUploadStatus] = useState("");
-
+    
     const [audioURL, setAudioURL] = useState("")
+    const [styleMode, setStyleMode] = useState("0") // 0 is concise, 1 is elaborate
+
+    const { databaseID, providerToken } = useContext(AccessContext)
 
     const onDrop = useCallback(acceptedFiles => {
         setSelectedFile(acceptedFiles);
         console.log(acceptedFiles);
-        callUpload()
     }, [])
+
+    useEffect(() => {
+        if (selectedFile.length > 0) {
+            callUpload()
+        }
+    }, [selectedFile])
 
     const {
         acceptedFiles,
@@ -34,11 +42,9 @@ function Index() {
 
     const acceptedFileItems = acceptedFiles.map(file =>
         (
-            <ul style={{listStyle: "none"}}>
                 <li key={file.path}>
                     {file.path}
                 </li>
-            </ul>
         )
     );
 
@@ -54,7 +60,6 @@ function Index() {
         )
     });
 
-
     const callUpload = async () => {
         setUploadStatus("Uploading....");
         const formData = new FormData();
@@ -64,6 +69,7 @@ function Index() {
             const response = await axios.post(`${rootURL}/api/v1/upload/`, formData);
 
             if (response.status >= 200 && response.status < 300) {
+                console.log(response.data);
                 setAudioURL(response.data.audio);
                 setUploadStatus("Upload successful");
                 setSelectedFile([]) // reset the selectedFiles
@@ -82,7 +88,7 @@ function Index() {
         console.log("AUDIO URL: ", audioURL);
 
         try {
-            const response = await axios.get(`${rootURL}/api/v1/download/${audioURL}`);
+            const response = await axios.get(`${rootURL}/api/v1/predict/${audioURL}/${databaseID}?provider_token=${providerToken}&style=${styleMode}`);
 
             if (response.status >= 200 && response.status < 300) {
                 console.log("RESPONSE DOWNLOAD: ", response.data);
@@ -107,6 +113,11 @@ function Index() {
         fontSize: "24px",
         width: "280px"
     }), [])
+
+    const updateStyle = (e) => {
+        e.preventDefault();
+        setStyleMode(e.target.value);
+    }
 
 
     return (
@@ -140,7 +151,7 @@ function Index() {
                             padding: "0",
                             border: 'none'
                         }}
-                        disabled={selectedFile.length === 0}>
+                        disabled={audioURL === ""}>
                             <span 
                             className="material-symbols-outlined" 
                             style={{
@@ -150,12 +161,20 @@ function Index() {
                                 >send</span>
                         </button>
                         {/* <button onClick={callPredict} disabled={audioURL===""}>Submit to Gemini</button> : */}
-                        {/* <p>{uploadStatus}</p> */}
                     </div>
                 </div>
+                <div style={{
+                    display: "grid",
+                    gridRow: "1 1",
+                    gap: "0.5em",
+                }}>
+                    <button disabled={styleMode === "0"} onClick={updateStyle} value="0">Concise</button> 
+                    <button disabled={styleMode === "1"} onClick={updateStyle} value="1">Elaborate</button> 
+                </div>
+                <p>{uploadStatus}</p>
+                <h4>Accepted files</h4>
+                <ul>{acceptedFileItems}</ul> 
                 {/* <aside>
-                    <h4>Accepted files</h4>
-                    <ul>{acceptedFileItems}</ul> 
                     <h4>Rejected files</h4>
                     <ul>{fileRejectionItems}</ul>
                 </aside> */}
