@@ -54,15 +54,13 @@ function Select() {
                     alignItems: "center"
                     
                     }}>
-                    <Card />
-                    <Card />
-                    <Card />
-                    <Card />
-                    <Card />
-                    <Card />
-                    <Card />
-                    <Card />
-                    <Card />
+                    {databases.map((database) => {
+                        <Card
+                        name={database.name}
+                        id={database.id}
+                        key={database.id}
+                        />
+                    })}
                 </div>
             </div>
         </div>

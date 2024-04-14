@@ -3,7 +3,7 @@ import { AccessContext } from './AccessProvider';
 import './Card.css'
 
 
-function Card({name, id, onClick}) {
+function Card({name, id}) {
     const [hidden, setHidden] = useState(true);
 
     const { setDatabaseID } = useContext(AccessContext)
