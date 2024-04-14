@@ -69,14 +69,21 @@
   }
 }
 
-/* CARD */
+.header-select {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  margin-bottom: 0.5em;
+}
+
 
 .select-scroll {
   background-color: #191919;
-  overflow-y: scroll;
   width: 480px;
   height: 500px;
   border-radius: 10px;
+
+  position: block;
 
   padding: 2em 0;
 

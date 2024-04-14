@@ -15,6 +15,7 @@ function Index() {
     const onDrop = useCallback(acceptedFiles => {
         setSelectedFile(acceptedFiles);
         console.log(acceptedFiles);
+        callUpload()
     }, [])
 
     const {
@@ -133,7 +134,7 @@ function Index() {
                     </div>
                     <div className='upload-btn'>
                         <button 
-                        onClick={callUpload} 
+                        onClick={callPredict} 
                         style={{
                             background: "#292929",
                             padding: "0",

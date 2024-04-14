@@ -3,20 +3,20 @@ import React, { createContext, useState } from 'react';
 export const AccessContext = createContext();
 
 export const AccessProvider = ({ children }) => {
-  const [accessToken, setAccessToken] = useState(null);
+  const [databaseID, setDatabaseID] = useState(null);
   const [providerToken, setProviderToken] = useState(null);
 
-  const updateAccessToken = (newToken) => {
-    setAccessToken(newToken);
+  const updateDatabaseID = (newToken) => {
+    setDatabaseID(newToken);
   };
   
   const updateProviderToken = (newToken) => {
     setProviderToken(newToken);
   };
   const value = { 
-    accessToken, 
+    databaseID, 
     providerToken,
-    updateAccessToken,
+    updateDatabaseID,
     updateProviderToken
    };
 

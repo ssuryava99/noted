@@ -3,21 +3,19 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { AccessContext } from '../components/AccessProvider';
 
 const SuccessPage = () => {
-  const { updateAccessToken, updateProviderToken } = useContext(AccessContext);
+  const { updateProviderToken } = useContext(AccessContext);
   const location = useLocation();
   const navigate = useNavigate();
 
   useEffect(() => {
-    const accessToken = new URLSearchParams(location.hash.substring(1)).get('access_token');
     const providerToken = new URLSearchParams(location.hash.substring(1)).get('provider_token');
 
-    if (accessToken && providerToken) {
-      updateAccessToken(accessToken);
+    if (providerToken) {
       updateProviderToken(providerToken);
       // Redirect the user after setting the access token
       navigate('/select')
     }
-  }, [location.hash, updateAccessToken, updateProviderToken, navigate]);
+  }, [location.hash, updateProviderToken, navigate]);
 
   return null; // or a loading spinner if needed
 };
